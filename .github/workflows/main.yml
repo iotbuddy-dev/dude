@@ -25,5 +25,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Run a one-line script
         run: echo Hello, world!
+      - name: Run a one-line script
+        run: ls -la
       - name: Build docker images
         run: docker build . -f Dockerfile.builder -t iotbuddy-dev/dude:latest
