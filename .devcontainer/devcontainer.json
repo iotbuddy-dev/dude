@@ -1,0 +1,15 @@
+{
+    "build": {
+        "dockerfile": "../dev.Dockerfile"
+    },
+    "extensions": [
+        "golang.go"
+    ],
+    "forwardPorts": [
+        3000
+    ],
+    "runArgs": [
+        "-u",
+        "vscode",
+    ]
+}
