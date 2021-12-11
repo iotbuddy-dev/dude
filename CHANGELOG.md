@@ -8,3 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Init repository with base files.
 - Add dev Dockerfile.
 - Configure devcontainer for VSCode.
+- Add builder Dockerfile.
+- Config CI (GitHub Workflow).
+- Setup simple web server with /hello endpoint.
