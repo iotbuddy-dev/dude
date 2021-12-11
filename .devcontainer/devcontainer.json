@@ -1,6 +1,6 @@
 {
     "build": {
-        "dockerfile": "../dev.Dockerfile"
+        "dockerfile": "../Dockerfile.dev"
     },
     "extensions": [
         "golang.go"
