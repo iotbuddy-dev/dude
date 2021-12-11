@@ -23,10 +23,14 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
+      - name: Print dir 1
+        run: ls -la
       - name: Build docker images
         run: docker build . -f Dockerfile.builder -t iotbuddy-dev/dude:latest
       - name: Save docker images
         run: docker save -o artifacts/iotbuddy-dev-dude.tar iotbuddy-dev/dude:latest
+      - name: Print dir 2
+        run: ls -la
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.3.0
         with:
