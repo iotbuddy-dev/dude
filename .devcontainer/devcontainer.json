@@ -7,9 +7,5 @@
     ],
     "forwardPorts": [
         3000
-    ],
-    "runArgs": [
-        "-u",
-        "vscode",
     ]
 }
