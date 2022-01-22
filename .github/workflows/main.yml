@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build docker images
-        run: docker build . -f Dockerfile --target deploy -t "iotbuddy-dev/dude:${{ github.sha }}" -t "iotbuddy-dev/dude:latest"
+        run: DOCKER_BUILDKIT=1 docker build . -f Dockerfile --target deploy -t "iotbuddy-dev/dude:${{ github.sha }}" -t "iotbuddy-dev/dude:latest"
       - name: Save docker images
         run: docker save -o "iotbuddy-dev-dude.${{ github.sha }}.tar" "iotbuddy-dev/dude:${{ github.sha }}" "iotbuddy-dev/dude:latest"
       - name: Compress stuff
