@@ -50,7 +50,7 @@ FROM base as test
 WORKDIR /app
 COPY /app .
 RUN go mod download
-RUN CGO_ENABLED=0 go test
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH CGO_ENABLED=0 go test
 
 # Deploy stage
 FROM alpine:${ALPINE_VERSION} as deploy
