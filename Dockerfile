@@ -44,6 +44,14 @@ COPY /app .
 RUN go mod download
 RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o build/dude
 
+# Test stage
+FROM base as test
+
+WORKDIR /app
+COPY /app .
+RUN go mod download
+RUN CGO_ENABLED=0 go test
+
 # Deploy stage
 FROM alpine:${ALPINE_VERSION} as deploy
 

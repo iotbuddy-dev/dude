@@ -9,6 +9,15 @@ on:
   workflow_dispatch:
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run tests
+        run: docker build . -f Dockerfile --target test -t "iotbuddy-dev/dude:test"
+
   build:
     runs-on: ubuntu-latest
     steps:
