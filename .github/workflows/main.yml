@@ -31,9 +31,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build docker images
-        run: docker buildx build --platform=linux/amd64,linux/arm64 . -f Dockerfile --target deploy -t "iotbuddy-dev/dude:${{ github.sha }}" -t "iotbuddy-dev/dude:latest" -o type=docker
+      - name: Build docker images - linux/amd64
+        run: docker buildx build --platform=linux/amd64 . -f Dockerfile --target deploy -t "iotbuddy-dev/dude:${{ github.sha }}" -t "iotbuddy-dev/dude:latest" -o type=docker
       
+      - name: Build docker images - linux/arm64
+        run: docker buildx build --platform=linux/arm64 . -f Dockerfile --target deploy -t "iotbuddy-dev/dude:${{ github.sha }}" -t "iotbuddy-dev/dude:latest" -o type=docker
+
       - name: List all builded docker images
         run: docker buildx ls
 
