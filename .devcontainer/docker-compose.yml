@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  dude:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: dev
+    command: sleep infinity
+    ports:
+      - "8080:8080"
+    volumes:
+      - ..:/workspace
+    networks:
+      - backend
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    restart: unless-stopped
+    volumes:
+      - mongodb-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    ports:
+      - "27017:27017"
+    networks:
+      - backend
+
+volumes:
+  mongodb-data:
+
+networks:
+  backend:
+    driver: bridge

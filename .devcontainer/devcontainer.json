@@ -1,12 +1,13 @@
 {
-    "build": {
-        "dockerfile": "../Dockerfile",
-        "target": "dev"
-    },
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "dude",
+    "workspaceFolder": "/workspace",
+    "shutdownAction": "stopCompose",
     "extensions": [
-        "golang.go"
+        "golang.go",
+        "mongodb.mongodb-vscode"
     ],
     "forwardPorts": [
-        3000
+        3000, 27017
     ]
 }
