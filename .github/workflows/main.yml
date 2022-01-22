@@ -19,7 +19,9 @@ jobs:
         uses: docker/setup-buildx-action@v1
 
       - name: Run tests
-        run: docker buildx build . --platform=amd64,arm64 -f Dockerfile --target test -t "iotbuddy-dev/dude:test"
+        run: |
+          docker buildx build . --platform=amd64 -f Dockerfile --target test
+          docker buildx build . --platform=arm64 -f Dockerfile --target test
 
   build:
     runs-on: ubuntu-latest
