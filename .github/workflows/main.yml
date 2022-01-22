@@ -44,5 +44,6 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.3.0
         with:
-          name: iotbuddy-dev-dude.${{ github.sha }}
-          path: iotbuddy-dev-dude.${{ github.sha }}-*.tar.gz
+          title: iotbuddy-dev-dude
+            - name: "Docker images"
+              files: [ iotbuddy-dev-dude.${{ github.sha }}-*.tar.gz ]
