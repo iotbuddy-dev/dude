@@ -31,26 +31,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build docker images - linux/amd64
-        run: docker buildx build --platform=linux/amd64 . -f Dockerfile --target deploy -t "iotbuddy-dev/dude:${{ github.sha }}" -t "iotbuddy-dev/dude:latest" -o type=docker
-      
-      - name: List all builded docker images 1
-        run: docker images
-    
-      - name: Build docker images - linux/arm64
-        run: docker buildx build --platform=linux/arm64 . -f Dockerfile --target deploy -t "iotbuddy-dev/dude:${{ github.sha }}" -t "iotbuddy-dev/dude:latest" -o type=docker
+      - name: Build docker images - amd64
+        run: |
+          docker buildx build --platform=amd64 . -f Dockerfile --target deploy -t "iotbuddy-dev/dude:${{ github.sha }}-amd64" -t "iotbuddy-dev/dude:latest-amd64" --output "type=docker,dest=iotbuddy-dev-dude.${{ github.sha }}-amd64.tar"
+          docker buildx build --platform=arm64 . -f Dockerfile --target deploy -t "iotbuddy-dev/dude:${{ github.sha }}-arm64" -t "iotbuddy-dev/dude:latest-arm64" --output "type=docker,dest=iotbuddy-dev-dude.${{ github.sha }}-arm64.tar"
 
-      - name: List all builded docker images 2
-        run: docker images
-
-      - name: Save docker images
-        run: docker save -o "iotbuddy-dev-dude.${{ github.sha }}.tar" "iotbuddy-dev/dude:${{ github.sha }}" "iotbuddy-dev/dude:latest"
-      
       - name: Compress stuff
-        run: gzip "iotbuddy-dev-dude.${{ github.sha }}.tar"
+        run: |
+          gzip "iotbuddy-dev-dude.${{ github.sha }}-amd64.tar" 
+          gzip "iotbuddy-dev-dude.${{ github.sha }}-arm64.tar" 
       
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.3.0
         with:
           name: iotbuddy-dev-dude.${{ github.sha }}
-          path: iotbuddy-dev-dude.${{ github.sha }}.tar.gz
+          path: iotbuddy-dev-dude.${{ github.sha }}-*.tar.gz
