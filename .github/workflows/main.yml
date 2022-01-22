@@ -15,8 +15,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
       - name: Run tests
-        run: docker build . -f Dockerfile --target test -t "iotbuddy-dev/dude:test"
+        run: docker buildx build . --platform=amd64,arm64 -f Dockerfile --target test -t "iotbuddy-dev/dude:test"
 
   build:
     runs-on: ubuntu-latest
