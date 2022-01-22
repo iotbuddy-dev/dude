@@ -1,8 +1,10 @@
 ARG GO_VERSION=1.16
 ARG ALPINE_VERSION=3.15
 
-FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} as base
+# Base stage
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-alpine${ALPINE_VERSION} as base
 
+ARG TARGETOS TARGETARCH
 ENV GCO_ENABLED=0
 
 # Develop env stage
@@ -40,7 +42,7 @@ FROM base as build
 WORKDIR /app
 COPY /app .
 RUN go mod download
-RUN go build -o build/dude
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o build/dude
 
 # Deploy stage
 FROM alpine:${ALPINE_VERSION} as deploy
