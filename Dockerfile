@@ -5,6 +5,9 @@ FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} as base
 
 ENV GCO_ENABLED=0
 
+# Develop env stage
+FROM base as dev
+
 ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=1000
@@ -30,3 +33,19 @@ ENV ENV="/home/$USERNAME/.ashrc" \
 RUN printf 'ZSH_THEME="candy"\nENABLE_CORRECTION="false"\nplugins=(git copyfile extract colorize dotenv encode64 golang)\nsource $ZSH/oh-my-zsh.sh' > "/home/$USERNAME/.zshrc"
 RUN echo "exec `which zsh`" > "/home/$USERNAME/.ashrc"
 USER vscode
+
+# Build stage
+FROM base as build 
+
+WORKDIR /app
+COPY /app .
+RUN go mod download
+RUN go build -o build/dude
+
+# Deploy stage
+FROM alpine:${ALPINE_VERSION} as deploy
+
+WORKDIR /app
+COPY --from=build /app/build .
+EXPOSE 8080
+ENTRYPOINT ["./dude"]

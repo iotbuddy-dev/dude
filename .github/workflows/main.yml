@@ -7,8 +7,8 @@ on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ master ]
-  # pull_request:
-    # branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -24,11 +24,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build docker images
-        run: docker build . -f Dockerfile.builder -t iotbuddy-dev/dude:latest
+        run: docker build . -f Dockerfile --target deploy -t "iotbuddy-dev/dude:${{ github.sha }}" -t "iotbuddy-dev/dude:latest"
       - name: Save docker images
-        run: docker save -o iotbuddy-dev-dude.tar iotbuddy-dev/dude:latest
+        run: docker save -o "iotbuddy-dev-dude.${{ github.sha }}.tar" "iotbuddy-dev/dude:${{ github.sha }}" "iotbuddy-dev/dude:latest"
+      - name: Compress stuff
+        run: gzip "iotbuddy-dev-dude.${{ github.sha }}.tar"
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.3.0
         with:
-          name: iotbuddy-dev-dude-${{ github.ref_name }}-${{ github.sha }}
-          path: iotbuddy-dev-dude.tar
+          name: iotbuddy-dev-dude.${{ github.sha }}
+          path: iotbuddy-dev-dude.${{ github.sha }}.tar.gz
