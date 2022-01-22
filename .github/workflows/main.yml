@@ -1,26 +1,16 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -31,23 +21,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build docker images - amd64
+      - name: Build docker images for amd64 & arm64
         run: |
           docker buildx build --platform=amd64 . -f Dockerfile --target deploy -t "iotbuddy-dev/dude:${{ github.sha }}-amd64" -t "iotbuddy-dev/dude:latest-amd64" --output "type=docker,dest=iotbuddy-dev-dude.${{ github.sha }}-amd64.tar"
           docker buildx build --platform=arm64 . -f Dockerfile --target deploy -t "iotbuddy-dev/dude:${{ github.sha }}-arm64" -t "iotbuddy-dev/dude:latest-arm64" --output "type=docker,dest=iotbuddy-dev-dude.${{ github.sha }}-arm64.tar"
 
-      - name: Compress stuff
+      - name: Compress docker image artifacts
         run: |
           gzip "iotbuddy-dev-dude.${{ github.sha }}-amd64.tar" 
           gzip "iotbuddy-dev-dude.${{ github.sha }}-arm64.tar" 
       
-      - name: Archive Docker image for AMD64
+      - name: Archive docker image for amd64
         uses: actions/upload-artifact@v2.3.0
         with:
           name: iotbuddy-dev-dude.${{ github.sha }}-amd64
           path: iotbuddy-dev-dude.${{ github.sha }}-amd64.tar.gz
 
-      - name: Archive Docker image for ARM64
+      - name: Archive docker image for arm64
         uses: actions/upload-artifact@v2.3.0
         with:
           name: iotbuddy-dev-dude.${{ github.sha }}-arm64
