@@ -46,4 +46,4 @@ jobs:
         with:
           title: iotbuddy-dev-dude
             - name: "Docker images"
-              files: [ iotbuddy-dev-dude.${{ github.sha }}-*.tar.gz ]
+              files: [ iotbuddy-dev-dude.*-*.tar.gz ]
