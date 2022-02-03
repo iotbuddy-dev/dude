@@ -1,6 +1,6 @@
 name: CI
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   code-ql:
@@ -35,7 +35,7 @@ jobs:
     needs: code-ql
     strategy:
       matrix:
-        arch: ["amd64", "arm64"]
+        arch: [ "amd64" ]
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
@@ -54,7 +54,7 @@ jobs:
     needs: test
     strategy:
       matrix:
-        arch: ["amd64", "arm64"]
+        arch: [ "amd64" ]
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
@@ -73,7 +73,7 @@ jobs:
     needs: lint
     strategy:
       matrix:
-        arch: ["amd64", "arm64"]
+        arch: [ "amd64", "arm64" ]
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
