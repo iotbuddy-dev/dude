@@ -6,7 +6,7 @@ FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-alpine${ALPINE_VERSION} as b
 
 ARG TARGETOS TARGETARCH
 ENV GCO_ENABLED=0
-RUN apk update && apk upgrade && apk add staticcheck
+RUN apk update && apk upgrade && apk add --no-cache staticcheck build-base
 
 # --- Develop env stage ---
 FROM base as dev
@@ -23,7 +23,7 @@ RUN adduser $USERNAME -s /bin/sh -D -u $USER_UID $USER_GID && \
 
 # Install packages and Go language server
 RUN apk update && apk upgrade && \
-    apk add --no-cache git sudo build-base openssh-client zsh
+    apk add --no-cache git sudo openssh-client zsh
 RUN go install golang.org/x/tools/gopls@latest
 
 # Setup shell
