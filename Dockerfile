@@ -6,7 +6,8 @@ FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-alpine${ALPINE_VERSION} as b
 
 ARG TARGETOS TARGETARCH
 ENV GCO_ENABLED=0
-RUN apk update && apk upgrade && apk add --no-cache staticcheck build-base
+RUN apk update && apk upgrade && \
+    apk add --no-cache staticcheck build-base
 
 # --- Develop env stage ---
 FROM base as dev
