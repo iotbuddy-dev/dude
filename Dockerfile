@@ -1,13 +1,14 @@
 ARG GO_VERSION=1.16
 ARG ALPINE_VERSION=3.15
 
-# Base stage
+# --- Base stage ---
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-alpine${ALPINE_VERSION} as base
 
 ARG TARGETOS TARGETARCH
 ENV GCO_ENABLED=0
+RUN apk update && apk upgrade && apk add staticcheck
 
-# Develop env stage
+# --- Develop env stage ---
 FROM base as dev
 
 ARG USERNAME=vscode
@@ -36,21 +37,29 @@ RUN printf 'ZSH_THEME="candy"\nENABLE_CORRECTION="false"\nplugins=(git copyfile 
 RUN echo "exec `which zsh`" > "/home/$USERNAME/.ashrc"
 USER vscode
 
-# Build stage
-FROM base as build 
+# --- Base for targets in CI workflow ---
+FROM base as ci-base
 
+ENV GCO_ENABLED=0
 WORKDIR /app
 COPY /app .
 RUN go mod download
+
+# --- Build stage ---
+FROM ci-base as build 
+
 RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o build/dude
 
-# Test stage
-FROM base as test
+# --- Test stage ---
+FROM ci-base as test
 
-WORKDIR /app
-COPY /app .
-RUN go mod download
-RUN GOOS=$TARGETOS GOARCH=$TARGETARCH CGO_ENABLED=0 go test
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH CGO_ENABLED=0 go test -coverprofile=coverage.out ./...
+
+# --- Lint stage ---
+FROM ci-base as lint
+
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH CGO_ENABLED=0 go vet ./...
+RUN staticcheck ./...
 
 # Deploy stage
 FROM alpine:${ALPINE_VERSION} as deploy

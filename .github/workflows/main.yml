@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   code-ql:
     continue-on-error: true
-    name: Run Code-QL
+    name: code-ql
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -50,8 +50,27 @@ jobs:
       - name: Run tests
         run: docker buildx build . --platform=${{ matrix.arch }} -f Dockerfile --target test
 
-  build:
+  lint:
     needs: test
+    strategy:
+      matrix:
+        arch: ["amd64", "arm64"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run linters
+        run: docker buildx build . --platform=${{ matrix.arch }} -f Dockerfile --target lint
+
+  build:
+    needs: lint
     strategy:
       matrix:
         arch: ["amd64", "arm64"]
