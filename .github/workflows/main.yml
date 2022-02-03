@@ -3,7 +3,36 @@ name: CI
 on: [push, pull_request]
 
 jobs:
+  code-ql:
+    continue-on-error: true
+    name: Run Code-QL
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      matrix:
+        language: [ 'go' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: ${{ matrix.language }}
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v1
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v1
+
   test:
+    needs: code-ql
     strategy:
       matrix:
         arch: ["amd64", "arm64"]
