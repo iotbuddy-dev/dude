@@ -1,15 +1,12 @@
 name: CI
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
-  workflow_dispatch:
+on: [push, pull_request]
 
 jobs:
   test:
+    strategy:
+      matrix:
+        arch: ["amd64", "arm64"]
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
@@ -22,11 +19,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Run tests
-        run: |
-          docker buildx build . --platform=amd64 -f Dockerfile --target test
-          docker buildx build . --platform=arm64 -f Dockerfile --target test
+        run: docker buildx build . --platform=${{ matrix.arch }} -f Dockerfile --target test
 
   build:
+    needs: test
+    strategy:
+      matrix:
+        arch: ["amd64", "arm64"]
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
@@ -38,24 +37,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build docker images for amd64 & arm64
+      - name: Build docker images for ${{ matrix.arch }}
         run: |
-          docker buildx build --platform=amd64 . -f Dockerfile --target deploy -t "iotbuddy-dev/dude:${{ github.sha }}-amd64" -t "iotbuddy-dev/dude:latest-amd64" --output "type=docker,dest=iotbuddy-dev-dude.${{ github.sha }}-amd64.tar"
-          docker buildx build --platform=arm64 . -f Dockerfile --target deploy -t "iotbuddy-dev/dude:${{ github.sha }}-arm64" -t "iotbuddy-dev/dude:latest-arm64" --output "type=docker,dest=iotbuddy-dev-dude.${{ github.sha }}-arm64.tar"
+          docker buildx build 
+            --platform=${{ matrix.arch }} . \
+            -f Dockerfile \
+            --target deploy \
+            -t "iotbuddy-dev/dude:${{ github.sha }}-${{ matrix.arch }}" \
+            --output "type=docker,dest=iotbuddy-dev-dude.${{ github.sha }}-${{ matrix.arch }}.tar"
 
       - name: Compress docker image artifacts
-        run: |
-          gzip "iotbuddy-dev-dude.${{ github.sha }}-amd64.tar" 
-          gzip "iotbuddy-dev-dude.${{ github.sha }}-arm64.tar" 
+        run: gzip "iotbuddy-dev-dude.${{ github.sha }}-${{ matrix.arch }}.tar" 
       
-      - name: Archive docker image for amd64
+      - name: Archive docker image for ${{ matrix.arch }}
         uses: actions/upload-artifact@v2.3.0
         with:
-          name: iotbuddy-dev-dude.${{ github.sha }}-amd64
-          path: iotbuddy-dev-dude.${{ github.sha }}-amd64.tar.gz
+          name: iotbuddy-dev-dude.${{ github.sha }}-${{ matrix.arch }}
+          path: iotbuddy-dev-dude.${{ github.sha }}-${{ matrix.arch }}.tar.gz
 
-      - name: Archive docker image for arm64
-        uses: actions/upload-artifact@v2.3.0
-        with:
-          name: iotbuddy-dev-dude.${{ github.sha }}-arm64
-          path: iotbuddy-dev-dude.${{ github.sha }}-arm64.tar.gz
