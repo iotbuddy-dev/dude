@@ -39,7 +39,7 @@ jobs:
 
       - name: Build docker images for ${{ matrix.arch }}
         run: |
-          docker buildx build 
+          docker buildx build \
             --platform=${{ matrix.arch }} . \
             -f Dockerfile \
             --target deploy \
