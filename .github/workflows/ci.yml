@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Prepare job
-        uses: ./.github/prepare_job.yml
+        uses: ./.github/actions/prepare-job
 
       - name: Run tests
         run: docker buildx build . --platform=${{ matrix.arch }} -f Dockerfile --target test
