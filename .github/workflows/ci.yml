@@ -37,8 +37,11 @@ jobs:
         arch: [ "amd64" ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/prepare-multiarch-docker
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Prepare multi-arch docker
+        uses: ./.github/actions/prepare-multiarch-docker
 
       - name: Run tests
         run: docker buildx build . --platform=${{ matrix.arch }} -f Dockerfile --target test
@@ -50,8 +53,11 @@ jobs:
         arch: [ "amd64" ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/prepare-multiarch-docker
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Prepare multi-arch docker
+        uses: ./.github/actions/prepare-multiarch-docker
 
       - name: Run linters
         run: docker buildx build . --platform=${{ matrix.arch }} -f Dockerfile --target lint
@@ -63,8 +69,11 @@ jobs:
         arch: [ "amd64", "arm64" ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/prepare-multiarch-docker
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Prepare multi-arch docker
+        uses: ./.github/actions/prepare-multiarch-docker
 
       - name: Build docker images for ${{ matrix.arch }}
         run: |
