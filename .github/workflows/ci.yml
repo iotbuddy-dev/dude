@@ -71,14 +71,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        
+
       - name: Prepare multi-arch docker
         uses: ./.github/actions/prepare-multiarch-docker
 
       - name: Build docker images for ${{ matrix.arch }}
         run: |
-          docker buildx build \
-            --platform=${{ matrix.arch }} . \
+          docker buildx build . \
+            --platform=${{ matrix.arch }} \
             -f Dockerfile \
             --target deploy \
             -t "iotbuddy-dev/dude:${{ github.sha }}-${{ matrix.arch }}" \
